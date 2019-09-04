@@ -1,12 +1,8 @@
 import numpy as np
 import random
 
+
 class Tetris:
-    locked_blocks = None
-    moving_blocks_informations = None
-    game_height = None
-    game_width = None
-    games = None
 
     def __init__(self, game_height, game_width, games):
         self.game_height = game_height
