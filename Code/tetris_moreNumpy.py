@@ -226,7 +226,7 @@ class Tetris:
         '''
         
         #first test if there is a moving Block at all, otherwise create one
-        no_moving_blocks = np.invert(np.anny(self.moving_blocks, axis=(-1, -2)))
+        no_moving_blocks = np.invert(np.any(self.moving_blocks, axis=(-1, -2)))
         num_missing_blocks = np.sum(no_moving_blocks)
         x_s = np.random.randint(low=0, high=self.game_width-4, size=num_missing_blocks)
         y_s = 0
@@ -235,46 +235,48 @@ class Tetris:
         self.moving_blocks_informations[no_moving_blocks, 0] = x_s
         self.moving_blocks_informations[no_moving_blocks, 1] = y_s
         self.moving_blocks_informations[no_moving_blocks, 2] = block_rotations
-        self.moving_blocks_informations[no_moving_blocks, 2] = block_ids
+        self.moving_blocks_informations[no_moving_blocks, 3] = block_ids
         self.place_block(self.moving_blocks[no_moving_blocks], self.moving_blocks_informations[no_moving_blocks])
         
-        game_overs = test_validity(self, self.moving_blocks, self.fixed_blocks)
+        game_overs = self.test_validity(self.moving_blocks, self.locked_blocks)
         done[game_overs] = True
-        reset_games(self.moving_blocks[done], self.moving_blocks_informations[done], self.fixed_blocks[done])
+        self.reset_games(self.moving_blocks[done], self.moving_blocks_informations[done], self.locked_blocks[done])
         score[game_overs] = -100
         
         mask = actions == 1
         changing_moving_blocks_informations = self.moving_blocks_informations[mask]
         changing_moving_blocks = self.moving_blocks[mask]
-        changing_moving_blocks[:, :, :-2] = changing_moving_blocks[:, :, 1:]
+        changing_moving_blocks[:, :, :-1] = changing_moving_blocks[:, :, 1:]
         changing_moving_blocks[:, :, -1] = 0
-        changing_moving_blocks_informations[0] = changing_moving_blocks_informations[0] - 1
+        changing_moving_blocks_informations[:, 0] = changing_moving_blocks_informations[:, 0] - 1
 
         mask = actions == 2
         changing_moving_blocks_informations = self.moving_blocks_informations[mask]
         changing_moving_blocks = self.moving_blocks[mask]
-        changing_moving_blocks[:, :, 1:] = changing_moving_blocks[:, :, :-2]
+        changing_moving_blocks[:, :, 1:] = changing_moving_blocks[:, :, :-1]
         changing_moving_blocks[:, :, 0] = 0
-        changing_moving_blocks_informations[0] = changing_moving_blocks_informations[0] + 1
+        changing_moving_blocks_informations[:, 0] = changing_moving_blocks_informations[:, 0] + 1
 
         mask = actions == 3
         changing_moving_blocks_informations = self.moving_blocks_informations[mask]
         changing_moving_blocks = self.moving_blocks[mask]
-        self.moving_blocks[mask] = self.rotate_block(changing_moving_blocks, changing_moving_blocks_informations, -1)
+        if np.any(mask):
+            self.moving_blocks[mask] = self.rotate_block(changing_moving_blocks, changing_moving_blocks_informations, -1)
 
         mask = actions == 4
         changing_moving_blocks_informations = self.moving_blocks_informations[mask]
         changing_moving_blocks = self.moving_blocks[mask]
-        self.moving_blocks[mask] = self.rotate_block(changing_moving_blocks, changing_moving_blocks_informations, 1)
+        if np.any(mask):
+            self.moving_blocks[mask] = self.rotate_block(changing_moving_blocks, changing_moving_blocks_informations, 1)
         
         invalid = np.invert(self.test_validity(self.moving_blocks, self.locked_blocks))
         self.moving_blocks[invalid] = old_moving_blocks[invalid]
         self.moving_blocks_informations[invalid] = old_moving_blocks_informations[invalid]
                 
         #move one down every step
-        self.moving_blocks[:, 1:] = self.moving_blocks[:, :-2]
+        self.moving_blocks[:, 1:] = self.moving_blocks[:, :-1]
         self.moving_blocks[:, 0] = 0
-        self.moving_blocks_informations[1] = self.moving_blocks_informations[1] + 1
+        self.moving_blocks_informations[:, 1] = self.moving_blocks_informations[:, 1] + 1
         now_fixed = np.invert(self.test_validity(self.moving_blocks, self.locked_blocks))
         self.moving_blocks[now_fixed] = old_moving_blocks[now_fixed]
         self.moving_blocks_informations[now_fixed] = old_moving_blocks_informations[now_fixed]
@@ -282,7 +284,7 @@ class Tetris:
         self.moving_blocks_informations[now_fixed] = 0
         self.moving_blocks[now_fixed] = 0
         #test for full Rows
-        score[now_fixed] += test_full_rows(self.locked_blocks[now_fixed])
+        score[now_fixed] += self.test_full_rows(self.locked_blocks[now_fixed])
         
         game_field = np.logical_or(self.locked_blocks, self.moving_blocks)
         
@@ -292,28 +294,28 @@ class Tetris:
     def test_validity(self, moving_blocks, fixed_blocks):
         # just test if there are still 4 Blocks
         right_ammount_of_blocks = np.sum(moving_blocks, axis=(-1, -2)) == 4
-        dont_overlap = np.anny(np.logical_and(moving_blocks, fixed_blocks), axis=(-1, -2))
-        return np.and(right_ammount_of_blocks, dont_overlap)
+        dont_overlap = np.any(np.logical_and(moving_blocks, fixed_blocks), axis=(-1, -2))
+        return np.logical_and(right_ammount_of_blocks, dont_overlap)
     
     def rotate_block(self, moving_blocks, blocks_informations, times):
-        moving_blocks = False
-        blocks_informations[2] += times
-        blocks_informations[2] %= 4
+        moving_blocks[:, :, :] = False
+        blocks_informations[:, 2] += times
+        blocks_informations[:, 2] %= 4
         self.place_block(moving_blocks, blocks_informations)
 
 
     def place_block(self, moving_blocks, blocks_informations):
-        moving_blocks = False
-        tetrises = self.blocks[blocks_informations[3], blocks_informations[2]]
-        moving_blocks[:4, :4] = tetrises
+        tetrises = self.blocks[blocks_informations[:, 3], blocks_informations[:, 2]]
+        moving_blocks[:, :, :] = False
+        moving_blocks[:, :4, :4] = tetrises
         for i in range(self.game_width):
-            movement_mask = blocks_informations[0] < i
-            moving_blocks[movement_mask, :, 1:] = moving_blocks[movement_mask, :, :-2]
+            movement_mask = blocks_informations[:, 0] < i
+            moving_blocks[movement_mask, :, 1:] = moving_blocks[movement_mask, :, :-1]
             moving_blocks[movement_mask, :, 0] = False
             
         for i in range(self.game_height):
-            movement_mask = blocks_informations[1] < i
-            moving_blocks[movement_mask, 1:] = moving_blocks[movement_mask, :-2]
+            movement_mask = blocks_informations[:, 1] < i
+            moving_blocks[movement_mask, 1:] = moving_blocks[movement_mask, :-1]
             moving_blocks[movement_mask, 0] = False
     
     def reset_games(self, moving_blocks, blocks_informations, locked_blocks):
@@ -327,7 +329,8 @@ class Tetris:
         for i in range(self.game_height):
             brokens = np.all(locked_blocks[:, i, :], axis=(-1))
             broken_rows[brokens] += 1
-            locked_blocks[brokens, 1:i] = locked_blocks[brokens, 0:i-1]
+            if i > 0:
+                locked_blocks[brokens, 1:i] = locked_blocks[brokens, 0:i-1]
             locked_blocks[brokens, 0] = 0
         reward[broken_rows==1] = 1
         reward[broken_rows==2] = 3
