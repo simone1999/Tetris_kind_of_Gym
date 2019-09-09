@@ -1,6 +1,4 @@
 import numpy as np
-import random
-
 
 class Tetris:
 
@@ -333,13 +331,3 @@ class Tetris:
         reward[broken_rows == 4] = 10
 
         return reward
-        
-        
-        
-        
-        
-    
-    
-    
-    
-    
