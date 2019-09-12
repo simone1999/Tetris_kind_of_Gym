@@ -1,4 +1,5 @@
 import numpy as np
+import pygame
 
 class Tetris:
 
@@ -208,6 +209,10 @@ class Tetris:
                 ]
             ], dtype=bool)
 
+        self.window_size = (self.game_width * 30 - 5, self.game_height * 30 - 5)
+        self.screen = pygame.display.set_mode(self.window_size)
+        pygame.display.set_caption("Tetris")
+
     def step(self, actions):
         score = np.zeros(self.games)
         done = np.zeros(self.games, dtype=bool)
@@ -332,8 +337,28 @@ class Tetris:
         return reward
 
     def render(self, id):
-        self.moving_blocks_informations[id]
-        self.moving_blocks[id]
+        moving_blocks = self.moving_blocks[id]
+        fixed_blocks = self.locked_blocks[id]
+
+        self.screen.fill((255, 255, 255))
+
+        for event in pygame.event.get():  # User did something
+            if event.type == pygame.QUIT:
+                exit(88)
+
+        for y in range(self.game_height):
+            for x in range(self.game_width):
+                x_cord = x * 30
+                y_cord = y * 30
+                if fixed_blocks[y, x]:
+                    pygame.draw.rect(self.screen, (255, 0, 0), [x_cord, y_cord, 25, 25], 0)
+                elif moving_blocks[y, x]:
+                    pygame.draw.rect(self.screen, (0, 255, 0), [x_cord, y_cord, 25, 25], 0)
+                else:
+                    pygame.draw.rect(self.screen, (0, 0, 255), [x_cord, y_cord, 25, 25], 0)
+
+        pygame.display.flip()
+
 
 
 
