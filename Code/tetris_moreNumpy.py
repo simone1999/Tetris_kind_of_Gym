@@ -329,5 +329,12 @@ class Tetris:
         reward[broken_rows == 2] = 3
         reward[broken_rows == 3] = 5
         reward[broken_rows == 4] = 10
-
         return reward
+
+    def render(self, id):
+        self.moving_blocks_informations[id]
+        self.moving_blocks[id]
+
+
+
+
