@@ -209,7 +209,7 @@ class Tetris:
                 ]
             ], dtype=bool)
 
-        self.window_size = (self.game_width * 30 - 5, self.game_height * 30 - 5)
+        self.window_size = (self.game_width * 26 + 10, self.game_height * 26 + 10)
         self.screen = pygame.display.set_mode(self.window_size)
         pygame.display.set_caption("Tetris")
 
@@ -340,7 +340,13 @@ class Tetris:
         moving_blocks = self.moving_blocks[id]
         fixed_blocks = self.locked_blocks[id]
 
-        self.screen.fill((255, 255, 255))
+        surface = pygame.image.load(r'sprites/tetris_head.jpg')
+        pygame.display.set_icon(surface)
+
+        self.screen.fill((150, 150, 150))
+
+        yellow = pygame.image.load(r'sprites/yellow_block.jpg')
+        green =  pygame.image.load(r'sprites/green_block.jpg')
 
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:
@@ -348,14 +354,14 @@ class Tetris:
 
         for y in range(self.game_height):
             for x in range(self.game_width):
-                x_cord = x * 30
-                y_cord = y * 30
+                x_cord = x * 26 + 5
+                y_cord = y * 26 + 5
                 if fixed_blocks[y, x]:
-                    pygame.draw.rect(self.screen, (255, 0, 0), [x_cord, y_cord, 25, 25], 0)
+                    self.screen.blit(yellow, (x_cord, y_cord))
                 elif moving_blocks[y, x]:
-                    pygame.draw.rect(self.screen, (0, 255, 0), [x_cord, y_cord, 25, 25], 0)
+                    self.screen.blit(green, (x_cord, y_cord))
                 else:
-                    pygame.draw.rect(self.screen, (0, 0, 255), [x_cord, y_cord, 25, 25], 0)
+                    pygame.draw.rect(self.screen, (0, 0, 0), [x_cord, y_cord, 25, 25], 0)
 
         pygame.display.flip()
 
