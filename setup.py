@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 
-     name='Tetris_kind_of_Gym',
+     name='tetris',
 
      version='0.1',
 
