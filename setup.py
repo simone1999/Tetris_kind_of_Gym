@@ -6,9 +6,9 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 
-     name='tetris',
+     name='gym-tetris-fast',
 
-     version='0.1',
+     version='0.2',
 
      scripts=['Code/tetris.py', 'Code/tetris_moreNumpy.py'] ,
 
