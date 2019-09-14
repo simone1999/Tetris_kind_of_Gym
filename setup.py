@@ -10,8 +10,10 @@ setuptools.setup(
 
      version='0.2',
 
-     scripts=['Code/tetris.py', 'Code/tetris_moreNumpy.py'] ,
+     #scripts=['Code/tetris.py', 'Code/tetris_moreNumpy.py'] ,
+     scripts=['Code/tetris_moreNumpy.py'] ,
 
+    
      author="Klein Simon",
 
      author_email="simon@klein-homepage.de",
