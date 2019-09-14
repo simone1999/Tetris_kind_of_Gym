@@ -26,8 +26,9 @@ setuptools.setup(
 
      url="https://github.com/simone1999/Tetris_kind_of_Gym",
 
-     packages=setuptools.find_packages(),
-
+     #packages=setuptools.find_packages(),
+     packages=['Code'],
+    
      classifiers=[
 
          "Programming Language :: Python :: 3",
