@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
 
-     name='gymTetrisFast',
+     name='gym_tetris_fast',
 
      version='0.2',
 
