@@ -10,7 +10,7 @@ setuptools.setup(
 
      version='0.2',
 
-     scripts=['Code/tetris', 'Code/tetris_moreNumpy'] ,
+     #scripts=['Code/tetris', 'Code/tetris_moreNumpy'] ,
      #scripts=['Code/tetris_moreNumpy'] ,
 
     
