@@ -1,1 +1,1 @@
-form Tetris import Tetris
+from Tetris import Tetris
