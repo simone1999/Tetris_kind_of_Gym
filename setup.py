@@ -11,7 +11,7 @@ setuptools.setup(
      version='0.2',
 
      #scripts=['Code/tetris', 'Code/tetris_moreNumpy'] ,
-     scripts=['Code/tetris.py'] ,
+     #scripts=['Code/tetris.py'] ,
 
     
      author="Klein Simon",
@@ -26,8 +26,8 @@ setuptools.setup(
 
      url="https://github.com/simone1999/Tetris_kind_of_Gym",
 
-     packages=setuptools.find_packages(),
-     #packages=['Tetris'],
+     #packages=setuptools.find_packages(),
+     packages=['Tetris'],
     
      classifiers=[
 
