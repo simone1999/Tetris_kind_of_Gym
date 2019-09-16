@@ -286,7 +286,9 @@ class Tetris:
         self.moving_blocks_informations[now_fixed] = 0
         self.moving_blocks[now_fixed] = 0
         game_field = np.logical_or(self.locked_blocks, self.moving_blocks)
-        return game_field, score, done, None
+        return game_field, score, done, {
+                                         "fixedBlocks":self.locked_blocks,
+                                         "movingBlocks":self.moving_blocks}
 
     def test_validity(self, moving_blocks, fixed_blocks):
         # just test if there are still 4 Blocks
