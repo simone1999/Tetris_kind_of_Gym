@@ -12,7 +12,10 @@ setuptools.setup(
 
      #scripts=['Tetris/tetris', 'Tetris/tetris_moreNumpy'] ,
      scripts=['Tetris/Tetris.py'] ,
-
+    
+     packages=['sprites'],
+     package_dir={'sprites': 'sprites'},
+     package_data={'sprites': ['*']},
     
      author="Klein Simon",
 
